@@ -71,6 +71,11 @@ jobs:
       - name: Read release version
         run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
 
+      - name: Kubernetes Set Context
+        uses: Azure/k8s-set-context@v3.0
+        with:
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
       - name: Helm tool installer
         uses: Azure/setup-helm@v3
         with:
@@ -78,6 +83,6 @@ jobs:
 
       - name: Helm login
         run: helm registry login ${{ secrets.ACR_REGISTRY }}.azurecr.io --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
-      
+
       - name: Helm install
         run: helm upgrade --install ${{ github.event.repository.name }} oci://${{ secrets.ACR_REGISTRY }}.azurecr.io/helm/${{ github.event.repository.name }}-helm --version ${{ env.RELEASE_VERSION }}
