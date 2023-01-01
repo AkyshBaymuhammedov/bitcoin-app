@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: CI/CD pipeline
 
 on:
   push:
@@ -6,83 +6,13 @@ on:
   pull_request:
     branches: ['main']
 
-env:
-  HELM_EXPERIMENTAL_OCI: 1
-  HELM_VERSION_TO_INSTALL: 3.9.0
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Read release version
-        run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
-
-      - name: Login ACR
-        uses: Azure/docker-login@v1
-        with:
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-          login-server: ${{ secrets.ACR_REGISTRY }}.azurecr.io
-
-      - name: Prepare Docker tag
-        run: echo "DOCKER_TAG=${{ secrets.ACR_REGISTRY }}.azurecr.io/${{ github.event.repository.name }}" >> $GITHUB_ENV
-
-      - name: Docker build and push
-        uses: docker/build-push-action@v3.2.0
-        with:
-          context: .
-          push: true
-          tags: ${{ env.DOCKER_TAG }}:${{ env.RELEASE_VERSION }} , ${{ env.DOCKER_TAG }}:${{ github.sha }} , ${{ env.DOCKER_TAG }}:latest
-
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Read release version
-        run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
-
-      - name: Helm tool installer
-        uses: Azure/setup-helm@v3
-        with:
-          version: ${{ env.HELM_VERSION_TO_INSTALL }}
-
-      - name: Helm login
-        run: helm registry login ${{ secrets.ACR_REGISTRY }}.azurecr.io --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
-
-      - name: Helm package
-        run: helm package ${GITHUB_WORKSPACE}/helm --app-version ${{ env.RELEASE_VERSION }} --version ${{ env.RELEASE_VERSION }}
-
-      - name: Helm push
-        run: helm push ${GITHUB_WORKSPACE}/${{ github.event.repository.name }}-helm-${{ env.RELEASE_VERSION }}.tgz oci://${{ secrets.ACR_REGISTRY }}.azurecr.io/helm
-
-  deploy:
-    needs: publish
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Read release version
-        run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
-
-      - name: Kubernetes Set Context
-        uses: Azure/k8s-set-context@v3.0
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-
-      - name: Helm tool installer
-        uses: Azure/setup-helm@v3
-        with:
-          version: ${{ env.HELM_VERSION_TO_INSTALL }}
-
-      - name: Helm login
-        run: helm registry login ${{ secrets.ACR_REGISTRY }}.azurecr.io --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
-
-      - name: Helm install
-        run: helm upgrade --install ${{ github.event.repository.name }} oci://${{ secrets.ACR_REGISTRY }}.azurecr.io/helm/${{ github.event.repository.name }}-helm --version ${{ env.RELEASE_VERSION }}
+  call-cicd-workflow:
+    uses: AkyshBaymuhammedov/workflow-templates/.github/workflows/nodejs-cicd.yml@main
+    with:
+      REPO_NAME: ${{ github.event.repository.name }}
+    secrets:
+      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+      ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}
