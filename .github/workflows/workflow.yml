@@ -71,10 +71,10 @@ jobs:
       - name: Read release version
         run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
 
-      - name: Kubernetes Set Context
-        uses: Azure/k8s-set-context@v3.0
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
+      # - name: Kubernetes Set Context
+      #   uses: Azure/k8s-set-context@v3.0
+      #   with:
+      #     kubeconfig: ${{ secrets.KUBECONFIG }}
 
       - name: Helm tool installer
         uses: Azure/setup-helm@v3
