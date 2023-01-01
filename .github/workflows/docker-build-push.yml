@@ -12,15 +12,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Read release version
         run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
-      - name: display release version
-        run: echo ${{ env.RELEASE_VERSION }}
-      # - name: Login ACR
-      #   uses: Azure/docker-login@v1
-      #   with:
-      #     username: ${{ secrets.ACR_USERNAME }}
-      #     password: ${{ secrets.ACR_PASSWORD }}
-      #     login-server: ${{ secrets.ACR_REGISTRY }}.azurecr.io
-      # - name: Build Docker
-      #   run: docker build . --t ${{ secrets.ACR_REGISTRY }}.azurecr.io/${{ github.event.repository.name }}:$(date +%s)
+
+      - name: Login ACR
+        uses: Azure/docker-login@v1
+        with:
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+          login-server: ${{ secrets.ACR_REGISTRY }}.azurecr.io
+
+      - name: Prepare Docker tag
+        run: echo "DOCKER_TAG=${{ secrets.ACR_REGISTRY }}.azurecr.io/${{ github.event.repository.name }}" >> $GITHUB_ENV
+
+      - name: Docker build and push
+        uses: docker/build-push-action@v3.2.0
+        with:
+          context: .
+          push: true
+          tags: ${{ env.DOCKER_TAG }}:${{ env.RELEASE_VERSION }} , ${{ env.DOCKER_TAG }}:${{ github.sha }} , ${{ env.DOCKER_TAG }}:latest
