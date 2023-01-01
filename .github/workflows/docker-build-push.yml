@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Read release version
+        run: RELEASE_VERSION=$(cat VERSION)
+      - name: display release version
+        run: echo $RELEASE_VERSION
+      # - name: Login ACR
+      #   uses: Azure/docker-login@v1
+      #   with:
+      #     username: ${{ secrets.ACR_USERNAME }}
+      #     password: ${{ secrets.ACR_PASSWORD }}
+      #     login-server: ${{ secrets.ACR_REGISTRY }}.azurecr.io
+      # - name: Build Docker
+      #   run: docker build . --t ${{ secrets.ACR_REGISTRY }}.azurecr.io/${{ github.event.repository.name }}:$(date +%s)
