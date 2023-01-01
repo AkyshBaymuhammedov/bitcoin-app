@@ -37,7 +37,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_TAG }}:${{ env.RELEASE_VERSION }} , ${{ env.DOCKER_TAG }}:${{ github.sha }} , ${{ env.DOCKER_TAG }}:latest
 
-  helm:
+  publish:
     needs: build
     runs-on: ubuntu-latest
 
@@ -60,3 +60,24 @@ jobs:
 
       - name: Helm push
         run: helm push ${GITHUB_WORKSPACE}/${{ github.event.repository.name }}-helm-${{ env.RELEASE_VERSION }}.tgz oci://${{ secrets.ACR_REGISTRY }}.azurecr.io/helm
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Read release version
+        run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Helm tool installer
+        uses: Azure/setup-helm@v3
+        with:
+          version: ${{ env.HELM_VERSION_TO_INSTALL }}
+
+      - name: Helm login
+        run: helm registry login ${{ secrets.ACR_REGISTRY }}.azurecr.io --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
+      
+      - name: Helm install
+        run: helm upgrade --install ${{ github.event.repository.name }} oci://${{ secrets.ACR_REGISTRY }}.azurecr.io/helm/${{ github.event.repository.name }}-helm --version ${{ env.RELEASE_VERSION }}
