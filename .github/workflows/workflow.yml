@@ -7,7 +7,7 @@ on:
     branches: ['main']
 
 jobs:
-  call-cicd-workflow:
+  workflow:
     uses: AkyshBaymuhammedov/workflow-templates/.github/workflows/nodejs-cicd.yml@main
     with:
       REPO_NAME: ${{ github.event.repository.name }}
