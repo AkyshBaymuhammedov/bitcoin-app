@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bitcoin-app
+  name: bitcoin-app
+  namespace: bitcoin-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bitcoin-app
+  template:
+    metadata:
+      labels:
+        app: bitcoin-app
+    spec:
+      containers:
+      - image: msassignment.azurecr.io/bitcoin-app:1.0
+        name: bitcoin-app
+        imagePullPolicy: Always
