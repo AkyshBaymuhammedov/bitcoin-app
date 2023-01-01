@@ -13,9 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Read release version
-        run: RELEASE_VERSION=$(cat VERSION)
+        run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
       - name: display release version
-        run: echo $RELEASE_VERSION
+        run: echo ${{ env.RELEASE_VERSION }}
       # - name: Login ACR
       #   uses: Azure/docker-login@v1
       #   with:
