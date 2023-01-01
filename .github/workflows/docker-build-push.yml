@@ -59,4 +59,4 @@ jobs:
         run: helm package ${GITHUB_WORKSPACE}/helm --app-version ${{ env.RELEASE_VERSION }} --version ${{ env.RELEASE_VERSION }}
 
       - name: Helm push
-        run: helm push ${GITHUB_WORKSPACE}/helm/${{ github.event.repository.name }}-helm-${{ env.RELEASE_VERSION }}.tgz oci://${{ secrets.ACR_REGISTRY }}.azurecr.io/helm
+        run: helm push ${GITHUB_WORKSPACE}/${{ github.event.repository.name }}-helm-${{ env.RELEASE_VERSION }}.tgz oci://${{ secrets.ACR_REGISTRY }}.azurecr.io/helm
