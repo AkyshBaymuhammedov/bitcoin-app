@@ -11,6 +11,7 @@ jobs:
     uses: AkyshBaymuhammedov/workflow-templates/.github/workflows/cicd-workflow.yml@main
     with:
       REPO_NAME: ${{ github.event.repository.name }}
+      NAMESPACE: ${{ github.event.repository.name }}
     secrets:
       ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
       ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
