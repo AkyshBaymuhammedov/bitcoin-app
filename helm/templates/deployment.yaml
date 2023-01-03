@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: {{ include "bitcoin-app.fullname" . }}
   labels:
+{{- with .Values.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
     {{- include "bitcoin-app.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}

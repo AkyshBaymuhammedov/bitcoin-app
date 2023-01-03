@@ -25,6 +25,9 @@ serviceAccount:
 
 podAnnotations: {}
 
+labels:
+  app: bitcoin-app
+
 podSecurityContext:
   {}
   # fsGroup: 2000
