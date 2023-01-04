@@ -2,8 +2,8 @@ FROM node:16.15.0-alpine
 
 WORKDIR /app
 
-COPY package.json ./
-COPY package-lock.json ./
+COPY --chown=node package.json ./
+COPY --chown=node package-lock.json ./
 RUN npm install
 
 COPY --chown=node . ./
