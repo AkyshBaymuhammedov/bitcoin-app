@@ -16,4 +16,5 @@ jobs:
       ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
       ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
       ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
-      KUBECONFIG: ${{ secrets.KUBECONFIG }}
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      KEY_VAULT: ${{ secrets.KEY_VAULT }}
