@@ -1,14 +1,20 @@
-FROM node:16.17.0-bullseye-slim
+FROM node:16.17.0-bullseye-slim as build
 
 WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
 
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm install
+COPY ./package.json ./
+COPY ./package-lock.json ./
+RUN npm ci --omit=dev
+COPY . ./
+RUN npm run build
 
-RUN mkdir -p node_modules/.cache && chown -R node:node node_modules/.cache
 
-COPY --chown=node . ./
+FROM nginx:1.17.8-alpine
 
-USER 1000
-CMD ["npm", "start"]
+COPY --from=build /app/build /usr/share/nginx/html
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/conf.d
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
