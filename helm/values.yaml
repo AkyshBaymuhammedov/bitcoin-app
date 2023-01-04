@@ -29,14 +29,14 @@ labels:
   app: bitcoin-app
 
 podSecurityContext:
-  fsGroup: 2000
+  fsGroup: 101
 
 securityContext:
   capabilities:
     drop:
       - ALL
   runAsNonRoot: true
-  runAsUser: 1000
+  runAsUser: 101
 
 service:
   type: ClusterIP
