@@ -46,7 +46,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /index.html
-              port: 3000
+              port: 80
             initialDelaySeconds: 15
             timeoutSeconds: 2
             periodSeconds: 5
@@ -54,7 +54,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /index.html
-              port: 3000
+              port: 80
             initialDelaySeconds: 15
             periodSeconds: 5
             failureThreshold: 1
