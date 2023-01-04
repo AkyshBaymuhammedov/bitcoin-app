@@ -6,6 +6,7 @@ COPY package.json ./
 COPY package-lock.json ./
 RUN npm install
 
-COPY . ./
+COPY --chown=node . ./
 
+USER 1000
 CMD ["npm", "start"]
